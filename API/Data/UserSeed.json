@@ -1,0 +1,57 @@
+[
+  {
+    "UserName": "Reese",
+    "GlossaryTerms": [
+      {
+        "Date": "2023-05-07",
+        "Term": "cillum",
+        "Definition": "Tempor ipsum aliqua irure eiusmod ea amet.",
+        "UserName": "Reese"
+      }
+    ]
+  },
+  {
+    "UserName": "Ewing",
+    "GlossaryTerms": [
+      {
+        "Date": "2023-02-20",
+        "Term": "qui",
+        "Definition": "Ipsum exercitation id duis ut laboris proident ut ut proident duis sint consequat nulla.",
+        "UserName": "Ewing"
+      }
+    ]
+  },
+  {
+    "UserName": "Magdalena",
+    "GlossaryTerms": [
+      {
+        "Date": "2023-02-04",
+        "Term": "adipisicing",
+        "Definition": "Sit laborum officia aliqua est fugiat dolor do tempor ea ipsum irure ut et.",
+        "UserName": "Magdalena"
+      }
+    ]
+  },
+  {
+    "UserName": "Glass",
+    "GlossaryTerms": [
+      {
+        "Date": "2023-03-18",
+        "Term": "id",
+        "Definition": "Anim amet dolore sunt enim duis occaecat eiusmod voluptate.",
+        "UserName": "Glass"
+      }
+    ]
+  },
+  {
+    "UserName": "Bush",
+    "GlossaryTerms": [
+      {
+        "Date": "2023-01-27",
+        "Term": "nostrud",
+        "Definition": "Elit duis sint fugiat in nisi ea ea dolore nisi esse consequat veniam.",
+        "UserName": "Jacquelyn"
+      }
+    ]
+  }
+]

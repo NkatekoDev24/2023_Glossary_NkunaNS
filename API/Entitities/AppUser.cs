@@ -4,6 +4,6 @@ namespace API.Entitities
 {
     public class AppUser : IdentityUser
     {
-        public List<GlossaryTerm> GlossaryTerms { get; set; } 
+        public List<GlossaryTerm> GlossaryTerms { get; set; } = new List<GlossaryTerm>();
     }
 }

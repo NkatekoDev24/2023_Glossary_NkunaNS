@@ -1,4 +1,5 @@
 using API.Dtos;
+using API.DTOs;
 using API.Entitities;
 using API.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -19,7 +20,7 @@ namespace API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register(RegisterDTo registerDto)
+        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
             if (await UserExists(registerDto.UserName))
             {

@@ -3,6 +3,7 @@ using API.Data;
 using API.Dtos;
 using API.Entitities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,25 +13,25 @@ namespace API.Controllers
     public class GlossaryController : BaseApiController
     {
         private readonly DataContext _context;
-        public GlossaryController(DataContext context)
-        {
-            _context = context;
+        private readonly UserManager<AppUser> _userManager;
 
+        public GlossaryController(DataContext context, UserManager<AppUser> userManager)
+        {
+            _userManager = userManager;
+            _context = context;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GlossaryTermDto>>> GetGlossaryTerms()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             var glossaryTerms = await _context.Glossaries
-                .Where(g => g.UserId == userId) 
                 .Select(g => new GlossaryTermDto
                 {
                     Id = g.Id,
                     Date = g.Date,
                     Term = g.Term,
-                    Definition = g.Definition
+                    Definition = g.Definition,
+                    UserName = g.User.UserName // Assuming User is a property on the GlossaryTerm entity representing the associated user
                 })
                 .ToListAsync();
 
@@ -39,20 +40,22 @@ namespace API.Controllers
 
 
 
+
         [HttpGet("pastmonth")]
         public async Task<ActionResult<IEnumerable<GlossaryTermDto>>> GetGlossaryTermsAddedOrUpdatedInPastMonth()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var pastMonthDate = DateTime.Now.AddDays(-30);
 
             var glossaryTerms = await _context.Glossaries
-                .Where(g => g.UserId == userId && g.Date >= pastMonthDate)
+                .Include(g => g.User) // Include the User navigation property
+                .Where(g => g.Date >= pastMonthDate)
                 .Select(g => new GlossaryTermDto
                 {
                     Id = g.Id,
                     Date = g.Date,
                     Term = g.Term,
-                    Definition = g.Definition
+                    Definition = g.Definition,
+                    UserName = g.User.UserName // Access the UserName property of the associated user
                 })
                 .ToListAsync();
 
@@ -64,10 +67,9 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GlossaryTermDto>> GetGlossaryTermById(int id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             var glossaryTerm = await _context.Glossaries
-                .FirstOrDefaultAsync(g => g.Id == id && g.UserId == userId);
+                .Include(g => g.User) // Include the User navigation property
+                .FirstOrDefaultAsync(g => g.Id == id);
 
             if (glossaryTerm == null)
             {
@@ -79,39 +81,44 @@ namespace API.Controllers
                 Id = glossaryTerm.Id,
                 Date = glossaryTerm.Date,
                 Term = glossaryTerm.Term,
-                Definition = glossaryTerm.Definition
+                Definition = glossaryTerm.Definition,
+                UserName = glossaryTerm.User.UserName // Access the UserName property of the associated user
             };
 
             return glossaryTermDto;
         }
-
-
 
         [HttpPost]
         public async Task<ActionResult<GlossaryTermDto>> CreateGlossaryTerm(GlossaryTermDto glossaryTermDto)
         {
             if (ModelState.IsValid)
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == glossaryTermDto.UserName);
+
+                if (user == null)
+                {
+                    return BadRequest("Invalid user"); // Return an appropriate error message if the user is not found
+                }
 
                 var glossaryTerm = new GlossaryTerm
                 {
                     Date = glossaryTermDto.Date,
                     Term = glossaryTermDto.Term,
                     Definition = glossaryTermDto.Definition,
-                    UserId = userId 
+                    User = user
                 };
 
                 _context.Glossaries.Add(glossaryTerm);
                 await _context.SaveChangesAsync();
 
                 glossaryTermDto.Id = glossaryTerm.Id;
+                glossaryTermDto.UserName = glossaryTerm.User.UserName;
+
                 return CreatedAtAction(nameof(GetGlossaryTerms), new { id = glossaryTerm.Id }, glossaryTermDto);
             }
 
             return BadRequest(ModelState);
         }
-
 
 
         [HttpPut("{id}")]
@@ -122,23 +129,20 @@ namespace API.Controllers
                 return BadRequest();
             }
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var glossaryTerm = await _context.Glossaries.FindAsync(id);
+            var glossaryTerm = await _context.Glossaries
+                .Include(g => g.User) // Include the User navigation property
+                .FirstOrDefaultAsync(g => g.Id == id);
 
             if (glossaryTerm == null)
             {
                 return NotFound();
             }
 
-            if (glossaryTerm.UserId != userId)
-            {
-                return Forbid(); // User does not have access to this glossary term
-            }
-
             glossaryTerm.Date = glossaryTermDto.Date;
             glossaryTerm.Term = glossaryTermDto.Term;
             glossaryTerm.Definition = glossaryTermDto.Definition;
+
+            // Assuming you don't update the associated user, no need to modify the User property
 
             _context.Entry(glossaryTerm).State = EntityState.Modified;
 
@@ -147,24 +151,14 @@ namespace API.Controllers
             return NoContent();
         }
 
-
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGlossaryTerm(int id)
         {
-            // Get the currently authenticated user's ID
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             var glossaryTerm = await _context.Glossaries.FindAsync(id);
 
             if (glossaryTerm == null)
             {
                 return NotFound();
-            }
-
-            if (glossaryTerm.UserId != userId)
-            {
-                return Forbid(); // User does not have access to this glossary term
             }
 
             _context.Glossaries.Remove(glossaryTerm);
@@ -173,6 +167,4 @@ namespace API.Controllers
             return NoContent();
         }
     }
-
-
 }

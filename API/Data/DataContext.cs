@@ -20,7 +20,7 @@ namespace API.Data
             builder.Entity<GlossaryTerm>()
                 .HasOne(gt => gt.User)
                 .WithMany(u => u.GlossaryTerms)
-                .HasForeignKey(gt => gt.UserId)
+                .HasForeignKey(gt => gt.UserName)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

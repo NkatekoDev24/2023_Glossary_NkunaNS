@@ -96,14 +96,14 @@ namespace API.Data.Migrations
                     b.Property<string>("Term")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("UserName")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserName");
 
-                    b.ToTable("Glossaries");
+                    b.ToTable("GlossaryTerm");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -238,7 +238,7 @@ namespace API.Data.Migrations
                 {
                     b.HasOne("API.Entitities.AppUser", "User")
                         .WithMany("GlossaryTerms")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("UserName")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");

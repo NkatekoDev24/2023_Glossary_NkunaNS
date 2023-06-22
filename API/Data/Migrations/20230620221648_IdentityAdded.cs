@@ -15,6 +15,10 @@ namespace API.Data.Migrations
                 name: "PK_Users",
                 table: "Users");
 
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_Glossaries",
+                table: "Glossaries");
+
             migrationBuilder.DropColumn(
                 name: "PasswordSalt",
                 table: "Users");
@@ -23,10 +27,9 @@ namespace API.Data.Migrations
                 name: "Users",
                 newName: "AspNetUsers");
 
-            migrationBuilder.RenameColumn(
-                name: "UserName",
-                table: "Glossaries",
-                newName: "UserId");
+            migrationBuilder.RenameTable(
+                name: "Glossaries",
+                newName: "GlossaryTerm");
 
             migrationBuilder.AlterColumn<string>(
                 name: "PasswordHash",
@@ -129,6 +132,11 @@ namespace API.Data.Migrations
             migrationBuilder.AddPrimaryKey(
                 name: "PK_AspNetUsers",
                 table: "AspNetUsers",
+                column: "Id");
+
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_GlossaryTerm",
+                table: "GlossaryTerm",
                 column: "Id");
 
             migrationBuilder.CreateTable(
@@ -252,11 +260,6 @@ namespace API.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Glossaries_UserId",
-                table: "Glossaries",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
@@ -266,6 +269,11 @@ namespace API.Data.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GlossaryTerm_UserName",
+                table: "GlossaryTerm",
+                column: "UserName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -294,9 +302,9 @@ namespace API.Data.Migrations
                 column: "RoleId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Glossaries_AspNetUsers_UserId",
-                table: "Glossaries",
-                column: "UserId",
+                name: "FK_GlossaryTerm_AspNetUsers_UserName",
+                table: "GlossaryTerm",
+                column: "UserName",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
@@ -306,8 +314,8 @@ namespace API.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Glossaries_AspNetUsers_UserId",
-                table: "Glossaries");
+                name: "FK_GlossaryTerm_AspNetUsers_UserName",
+                table: "GlossaryTerm");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -327,9 +335,13 @@ namespace API.Data.Migrations
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_GlossaryTerm",
+                table: "GlossaryTerm");
+
             migrationBuilder.DropIndex(
-                name: "IX_Glossaries_UserId",
-                table: "Glossaries");
+                name: "IX_GlossaryTerm_UserName",
+                table: "GlossaryTerm");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_AspNetUsers",
@@ -392,13 +404,12 @@ namespace API.Data.Migrations
                 table: "AspNetUsers");
 
             migrationBuilder.RenameTable(
+                name: "GlossaryTerm",
+                newName: "Glossaries");
+
+            migrationBuilder.RenameTable(
                 name: "AspNetUsers",
                 newName: "Users");
-
-            migrationBuilder.RenameColumn(
-                name: "UserId",
-                table: "Glossaries",
-                newName: "UserName");
 
             migrationBuilder.AlterColumn<byte[]>(
                 name: "PasswordHash",
@@ -423,6 +434,11 @@ namespace API.Data.Migrations
                 table: "Users",
                 type: "BLOB",
                 nullable: true);
+
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_Glossaries",
+                table: "Glossaries",
+                column: "Id");
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_Users",

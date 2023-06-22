@@ -1,0 +1,19 @@
+<div class="container mt-5">
+  <div *ngIf="!registerMode" class="text-center">
+    <h1 class="mb-4">Welcome to the Glossary App</h1>
+    <p class="lead">Expand your vocabulary and explore new terms.</p>
+    <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="medium" color="#fff" type="ball-scale-multiple" [fullScreen]="true"></ngx-spinner>
+
+    <div>
+      <button (click)="registerToggle()" class="btn btn-primary btn-lg">Get Started</button>
+    </div>
+  </div>
+
+  <div *ngIf="registerMode" class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-4 col-md-6">
+        <app-register (cancelRegister)="cancelRegisterMode($event)"></app-register>
+      </div>
+    </div>
+  </div>
+</div>
